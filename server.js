@@ -4,8 +4,11 @@ var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
 var app = express();
+  //var node_xj = require("xls-to-json");
 
-var COMMENTS_FILE = path.join(__dirname, 'comments.json');
+var xlsxj = require("xlsx-to-json");
+
+var COMMENTS_FILE = path.join(__dirname, 'output.json');
 
 app.set('port', (process.env.PORT || 3000));
 
@@ -24,15 +27,33 @@ app.use(function(req, res, next) {
     next();
 });
 
-// app.get('/api/comments', function(req, res) {
-//   fs.readFile(COMMENTS_FILE, function(err, data) {
-//     if (err) {
-//       console.error(err);
-//       process.exit(1);
-//     }
-//     res.json(JSON.parse(data));
-//   });
-// });
+
+app.get('/api/data',function (res) {
+    
+  xlsxj({
+    input: "DataExample2.xlsx",  // input xls 
+    output: "output.json" // output json 
+  }, function(err, result) {
+    if(err) {
+      console.error(err);
+    } else {
+      console.log(result);
+    }
+  });
+    
+});
+
+app.get('/api/json', function(req, res) {
+    console.log("hit get");
+  fs.readFile(COMMENTS_FILE, function(err, data) {
+    if (err) {
+      console.error(err);
+      process.exit(1);
+    }
+    console.log("processed");
+    res.json(JSON.parse(data));
+  });
+});
 
 // app.post('/api/comments', function(req, res) {
 //   fs.readFile(COMMENTS_FILE, function(err, data) {
